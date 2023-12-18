@@ -1,0 +1,3 @@
+genome: "data/genome.fasta"
+bam_dir: "data/bam"
+fastq_dir: "data/fastq"
