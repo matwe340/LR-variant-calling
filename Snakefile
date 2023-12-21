@@ -33,7 +33,7 @@ rule trim_reads:
     input:
         lambda wildcards: expand("{raw_fastq_dir}/" + config["read_name_pattern"], raw_fastq_dir = config["raw_fastq_dir"], read = [1, 2], id = wildcards.id),
     output:
-        expand("{fastq_trimmed_dir}/{{id}}.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
+        expand(temp("{fastq_trimmed_dir}/{{id}}.trimmed.fastq.gz"), fastq_trimmed_dir = config["fastq_trimmed_dir"])
     log: "logs/{individual}/trim.log"
     threads: 4
     resources:
@@ -46,12 +46,20 @@ def individual_trimmed(wildcards):
 
     individual_reads = individuals[wildcards.individual]
 
-    return expand("{fastq_trimmed_dir}/{id}.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], id = individual_reads)
+    return expand("{fastq_trimmed_dir}/{id}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], id = individual_reads)
+
+rule merge_trimmed:
+    input:
+        individual_trimmed
+    output:
+        expand("{fastq_trimmed_dir}/{{individual}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
+    shell:
+        "cat {input} > {output}"
 
 rule align:
     input:
         "output/genome.idx",
-        individual_trimmed
+        expand("{fastq_trimmed_dir}/{{individual}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
     params:
         "output/genome"
     output:
@@ -61,7 +69,7 @@ rule align:
         mem_mb = 80000
     log: "logs/{individual}/bwa.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params[0]} {input} 2> {log[0]} | samtools sort -@ {threads} -m {memory/threads} -o {output}" 
+        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {memory/threads} -o {output}" 
     
 rule markdup:
     input:
