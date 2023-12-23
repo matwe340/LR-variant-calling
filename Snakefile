@@ -77,7 +77,7 @@ rule markdup:
     input:
         expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
     output:
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
     log: "logs/{individual}/markdup.log"
     threads: 4
     shell:
@@ -85,17 +85,17 @@ rule markdup:
 
 rule index_bam:
     input:
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
     output:
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam.bai", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.rmdup.bam.bai", bam_dir = config['bam_dir'])
     shell:
         "samtools index -@ {threads} {input} {output}"
 
 rule call:
     input:
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir']),
+        expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir']),
         config["genome"],
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam.bai", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.rmdup.bam.bai", bam_dir = config['bam_dir'])
     output:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
