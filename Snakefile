@@ -65,17 +65,17 @@ rule align:
         "output/genome.idx",
         expand("{fastq_trimmed_dir}/{{individual}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
     params:
-        "output/genome"
+        genome_idx = "output/genome"
+        memory = "8G"
+
     output:
         temp(expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config["bam_dir"]))
     threads: 8
     resources:
         mem_mb = 80000
-    params:
-        memory = "8G"
     log: "logs/{individual}/bwa.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
+        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
     
 rule markdup:
     input:
