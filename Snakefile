@@ -73,9 +73,9 @@ rule align:
     
 rule markdup:
     input:
-        "{bam_dir}/{individual}.sorted.bam"
+        expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
     output:
-        "{bam_dir}/{individual}.rmdup.sorted.bam"
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
     log: "logs/{individual}/markdup.log"
     threads: 4
     shell:
@@ -83,17 +83,17 @@ rule markdup:
 
 rule index_bam:
     input:
-        "{bam_dir}/{individual}.rmdup.sorted.bam"
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
     output:
-        "{bam_dir}/{individual}.rmdup.sorted.bam.bai"
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam.bai", bam_dir = config['bam_dir'])
     shell:
         "samtools index -@ {threads} {input} {output}"
 
 rule call:
     input:
-        "{bam_dir}/{individual}.rmdup.sorted.bam",
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
         config["genome"],
-        "{bam_dir}/{individual}.rmdup.sorted.bam.bai"
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam.bai", bam_dir = config['bam_dir'])
     output:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
@@ -102,9 +102,9 @@ rule call:
 
 rule index_raw_vcf:
     input:
-        "{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz"
+        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config['vcf_dir'])
     output:
-        "{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.tbi"
+        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz.tbi", vcf_dir = config['vcf_dir'])
     shell:
         "bcftools index --threads {threads} {input}"
 
@@ -112,6 +112,7 @@ def individual_vcfs(wildcards):
     individuals = get_individuals()
 
     return expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
+        + expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.tbi", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
 
 rule merge_vcf:
     input:
