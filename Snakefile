@@ -2,7 +2,7 @@ configfile: "config.yml"
 localrules: unfiltered, index_bam, index_reference
 
 def chromosome_vcfs(wildcards):
-    with open(config["chromome_file"], 'r') as f:
+    with open(config["chromosome_file"], 'r') as f:
         chromosomes = [line.strip() for line in f]
     return expand("{vcf_dir}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
 
