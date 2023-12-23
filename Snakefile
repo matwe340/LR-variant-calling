@@ -15,6 +15,8 @@ def get_individuals():
                 individuals[line[0]] = []
             individuals[line[0]].append(line[1])
 
+    return individuals
+
 rule unfiltered:
     input:
         chromosome_vcfs
