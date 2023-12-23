@@ -33,7 +33,7 @@ rule trim_reads:
     input:
         lambda wildcards: expand("{raw_fastq_dir}/" + config["read_name_pattern"], raw_fastq_dir = config["raw_fastq_dir"], read = [1, 2], id = wildcards.id),
     output:
-        expand(temp("{fastq_trimmed_dir}/{{id}}.trimmed.fastq.gz"), fastq_trimmed_dir = config["fastq_trimmed_dir"])
+        temp(expand("{fastq_trimmed_dir}/{{id}}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"]))
     log: "logs/{id}/trim.log"
     threads: 4
     resources:
@@ -63,7 +63,7 @@ rule align:
     params:
         "output/genome"
     output:
-        expand(temp("{bam_dir}/{{individual}}.sorted.bam"), bam_dir = config["bam_dir"])
+        temp(expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config["bam_dir"]))
     threads: 8
     resources:
         mem_mb = 80000
