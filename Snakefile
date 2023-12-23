@@ -91,7 +91,7 @@ rule index_bam:
 
 rule call:
     input:
-        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.rmdup.sorted.bam", bam_dir = config['bam_dir']),
         config["genome"],
         expand("{bam_dir}/{{individual}}.rmdup.sorted.bam.bai", bam_dir = config['bam_dir'])
     output:
