@@ -65,9 +65,8 @@ rule align:
         "output/genome.idx",
         expand("{fastq_trimmed_dir}/{{individual}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
     params:
-        genome_idx = "output/genome"
+        genome_idx = "output/genome",
         memory = "8G"
-
     output:
         temp(expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config["bam_dir"]))
     threads: 8
