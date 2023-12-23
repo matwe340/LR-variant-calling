@@ -29,7 +29,7 @@ rule index_reference:
     params:
         "output/genome"
     shell:
-        "bwa-mem2 index -prefix {params[0]} {input[0]}"
+        "bwa-mem2 index -p {params[0]} {input[0]}"
 
 rule trim_reads:
     input:
