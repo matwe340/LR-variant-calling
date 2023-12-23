@@ -40,8 +40,10 @@ rule trim_reads:
     threads: 4
     resources:
         mem_mb = 40000
+    params:
+        memory = "40G"
     shell:
-        "bbduk.sh t={threads} -Xmx{memory} overwrite=true in={input[0]} in2={input[1]} out={output[0]} ref={config[adapters]} ktrim=r k=23 mink=25 hdist=1 tpe tbo 2>&1 > {log[0]}"
+        "bbduk.sh t={threads} -Xmx{params.memory} overwrite=true in={input[0]} in2={input[1]} out={output[0]} ref={config[adapters]} ktrim=r k=23 mink=25 hdist=1 tpe tbo 2>&1 > {log[0]}"
 
 def individual_trimmed(wildcards):
     individuals = get_individuals()
@@ -69,9 +71,11 @@ rule align:
     threads: 8
     resources:
         mem_mb = 80000
+    params:
+        samtools_mem = "8G"
     log: "logs/{individual}/bwa.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {memory/threads} -o {output}" 
+        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.samtools_mem} -o {output}" 
     
 rule markdup:
     input:
