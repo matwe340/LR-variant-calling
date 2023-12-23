@@ -10,3 +10,4 @@ dependencies:
   - bwa-mem2
   - bcftools
   - bbmap
+  - snakemake-executor-plugin-slurm
