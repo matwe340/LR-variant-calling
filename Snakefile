@@ -103,7 +103,7 @@ rule call:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
     shell:
-        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {chromsome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output}"
+        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {chromosome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output}"
 
 rule index_raw_vcf:
     input:
