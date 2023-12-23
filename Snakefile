@@ -111,8 +111,9 @@ rule index_raw_vcf:
 def individual_vcfs(wildcards):
     individuals = get_individuals()
 
-    return expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
-        + expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.tbi", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
+    vcf_list = expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
+    vcf_list.extend(expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.tbi", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome))
+    return vcf_list
 
 rule merge_vcf:
     input:
