@@ -4,7 +4,7 @@ localrules: unfiltered, index_bam, index_reference
 def chromosome_vcfs(wildcards):
     with open(config["chromosome_file"], 'r') as f:
         chromosomes = [line.strip() for line in f]
-    return expand("{vcf_dir}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
+    return expand("{vcf_dir}/{chromosome}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
 
 def get_individuals():
     individuals = dict()
