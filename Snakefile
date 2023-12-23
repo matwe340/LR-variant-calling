@@ -72,10 +72,10 @@ rule align:
     resources:
         mem_mb = 80000
     params:
-        samtools_mem = "8G"
+        memory = "8G"
     log: "logs/{individual}/bwa.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.samtools_mem} -o {output}" 
+        "bwa-mem2 mem -t {threads} {params[0]} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
     
 rule markdup:
     input:
