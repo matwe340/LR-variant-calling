@@ -34,7 +34,7 @@ rule trim_reads:
         lambda wildcards: expand("{raw_fastq_dir}/" + config["read_name_pattern"], raw_fastq_dir = config["raw_fastq_dir"], read = [1, 2], id = wildcards.id),
     output:
         expand(temp("{fastq_trimmed_dir}/{{id}}.trimmed.fastq.gz"), fastq_trimmed_dir = config["fastq_trimmed_dir"])
-    log: "logs/{individual}/trim.log"
+    log: "logs/{id}/trim.log"
     threads: 4
     resources:
         mem_mb = 40000
