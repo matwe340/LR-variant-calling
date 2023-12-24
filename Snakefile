@@ -1,12 +1,12 @@
 configfile: "config.yml"
-localrules: unfiltered, index_bam, index_reference
+localrules: unfiltered, index_bam, index_reference, merge_trimmed
 
 def chromosome_vcfs(wildcards):
     with open(config["chromosome_file"], 'r') as f:
         chromosomes = [line.strip() for line in f]
     return expand("{vcf_dir}/{chromosome}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
 
-def get_individuals():
+def get_individuals():  
     individuals = dict()
     with open(config["individual_file"], 'r') as f:
         for line in f:
@@ -25,7 +25,7 @@ rule index_reference:
     input: 
         config["genome"]
     output:
-        "output/genome.idx"
+        "output/genome.pac"
     params:
         "output/genome"
     shell:
@@ -62,7 +62,7 @@ rule merge_trimmed:
 
 rule align:
     input:
-        "output/genome.idx",
+        "output/genome.pac",
         expand("{fastq_trimmed_dir}/{{individual}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
     params:
         genome_idx = "output/genome",
