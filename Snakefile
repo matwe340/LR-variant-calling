@@ -109,7 +109,7 @@ rule index_raw_vcf:
     input:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config['vcf_dir'])
     output:
-        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz.tbi", vcf_dir = config['vcf_dir'])
+        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz.csi", vcf_dir = config['vcf_dir'])
     shell:
         "bcftools index --threads {threads} {input}"
 
@@ -117,7 +117,7 @@ def individual_vcfs(wildcards):
     individuals = get_individuals()
 
     vcf_list = expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome)
-    vcf_list.extend(expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.tbi", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome))
+    vcf_list.extend(expand("{vcf_dir}/{individual}/{chromosome}.raw.vcf.gz.csi", vcf_dir = config["vcf_dir"], individual = individuals.keys(), chromosome = wildcards.chromosome))
     return vcf_list
 
 rule merge_vcf:
