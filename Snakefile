@@ -71,7 +71,7 @@ rule align:
         temp(expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config["bam_dir"]))
     threads: 8
     resources:
-        mem_mb = 80000
+        mem_mb = 100000
     log: "logs/{individual}/bwa.log"
     shell:
         "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
