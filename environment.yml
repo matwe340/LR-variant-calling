@@ -8,6 +8,7 @@ dependencies:
   - snakemake
   - samtools
   - bwa-mem2
+  - conda-forge::gsl==2.7
   - bcftools
   - bbmap
   - snakemake-executor-plugin-slurm
