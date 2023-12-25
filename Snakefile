@@ -127,4 +127,4 @@ rule merge_vcf:
         expand("{vcf_dir}/{{chromosome}}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
     shell:
-        "bcftools merge --threads {threads} -Oz -o {output} {input}"
+        "bcftools merge --threads {threads} -Oz -o {output} {input[:len(inout)/2]}"
