@@ -1,5 +1,5 @@
 configfile: "config.yml"
-localrules: unfiltered, index_bam, index_reference, merge_trimmed
+localrules: unfiltered, index_bam, index_reference, merge_trimmed, index_raw_vcf
 
 def chromosome_vcfs(wildcards):
     with open(config["chromosome_file"], 'r') as f:
