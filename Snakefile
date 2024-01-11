@@ -74,17 +74,7 @@ rule align:
         mem_mb = 100000
     log: "logs/{individual}/bwa.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
-
-rule fixmate:
-    input:
-        expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
-    output:
-        temp(expand("{bam_dir}/{{individual}}.sorted.fixmate.bam", bam_dir = config['bam_dir']))
-    log: "logs/{individual}/fixmate.log"
-    threads: 4
-    shell:
-        "samtools fixmate -@ {threads} -m {input} {output} 2> {log}"
+        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools fixmate -@ {threads} -m - | samtools sort -@ {threads} -m {params.memory} -o {output}" 
 
 rule markdup:
     input:
