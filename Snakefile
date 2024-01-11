@@ -75,16 +75,26 @@ rule align:
     log: "logs/{individual}/bwa.log"
     shell:
         "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools sort -@ {threads} -m {params.memory} -o {output}" 
-    
-rule markdup:
+
+rule fixmate:
     input:
         expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
+    output:
+        temp(expand("{bam_dir}/{{individual}}.sorted.fixmate.bam", bam_dir = config['bam_dir']))
+    log: "logs/{individual}/fixmate.log"
+    threads: 4
+    shell:
+        "samtools fixmate -@ {threads} -m {input} {output} 2> {log}"
+
+rule markdup:
+    input:
+        expand("{bam_dir}/{{individual}}.sorted.fixmate.bam", bam_dir = config['bam_dir'])
     output:
         expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
     log: "logs/{individual}/markdup.log"
     threads: 4
     shell:
-        "samtools markdup -@ {threads} -S -r {input} {output} 2> {log}"
+        "samtools markdup -@ {threads} -d 2500 -S -r {input} {output} 2> {log}"
 
 rule index_bam:
     input:
@@ -134,3 +144,4 @@ rule merge_vcf:
     threads: 2
     shell:
         "bcftools merge --threads {threads} -Oz -o {output} {input.vcf}"
+
