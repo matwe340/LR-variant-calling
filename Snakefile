@@ -78,7 +78,7 @@ rule align:
 
 rule markdup:
     input:
-        expand("{bam_dir}/{{individual}}.sorted.fixmate.bam", bam_dir = config['bam_dir'])
+        expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
     output:
         expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
     log: "logs/{individual}/markdup.log"
