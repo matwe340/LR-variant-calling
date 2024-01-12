@@ -72,9 +72,12 @@ rule align:
     threads: 8
     resources:
         mem_mb = 100000
-    log: "logs/{individual}/bwa.log"
+    log: 
+        "logs/{individual}/bwa.log",
+        "logs/{individual}/fixmate.log",
+        "logs/{individual}/sort.log"
     shell:
-        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools fixmate -@ {threads} -m - - | samtools sort -@ {threads} -m {params.memory} -o {output}" 
+        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} 2> {log[0]} | samtools fixmate -@ {threads} -m - - 2> {log[1]} | samtools sort -@ {threads} -m {params.memory} -o {output} 2> {log[2]}"
 
 rule markdup:
     input:
