@@ -105,8 +105,11 @@ rule call:
     output:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
+    log: 
+        "logs/{individual}/{chromosome}/mpielup.log",
+        "logs/{individual}/{chromosome}/call.log"
     shell:
-        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {wildcards.chromosome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output}"
+        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {wildcards.chromosome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" 2> {log[0]} | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output} 2> {log[1]}"
 
 rule index_raw_vcf:
     input:
