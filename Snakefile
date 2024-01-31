@@ -88,7 +88,7 @@ rule markdup:
     log: "logs/{individual}/markdup.log"
     threads: 4
     shell:
-        "samtools markdup -@ {threads} -d 2500 -S -r {input} {output} > {log} 2>&1"
+        "samtools markdup -@ {threads} -d {config[optical_dup_dist]} -S -r {input} {output} > {log} 2>&1"
 
 rule index_bam:
     input:

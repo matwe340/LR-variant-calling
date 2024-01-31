@@ -1,2 +1,4 @@
 data/
 .snakemake
+logs/
+output/
