@@ -28,7 +28,7 @@ rule index_reference:
         "output/genome.pac"
     params:
         "output/genome"
-    log: "logs/index_reference.log"
+    log: expand("{logs}/index_reference.log", logs=config["log_dir"])
     shell:
         "bwa-mem2 index -p {params[0]} {input[0]} > {log} 2>&1"
 
@@ -37,7 +37,7 @@ rule trim_reads:
         lambda wildcards: expand("{raw_fastq_dir}/" + config["read_name_pattern"], raw_fastq_dir = config["raw_fastq_dir"], read = [1, 2], id = wildcards.id),
     output:
         temp(expand("{fastq_trimmed_dir}/{{id}}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], read = [1, 2]))
-    log: "logs/{id}/trim.log"
+    log: expand("{logs}/{{id}}/trim.log", logs=config["log_dir"])
     threads: 4
     resources:
         mem_mb = 40000
@@ -74,9 +74,9 @@ rule align:
     resources:
         mem_mb = 100000
     log: 
-        "logs/{individual}/bwa.log",
-        "logs/{individual}/fixmate.log",
-        "logs/{individual}/sort.log"
+        expand("{logs}/{{individual}}/bwa.log", logs=config["log_dir"]),
+        expand("{logs}/{{individual}}/fixmate.log", logs=config["log_dir"]),
+        expand("{logs}/{{individual}}/sort.log", logs=config["log_dir"])
     shell:
         "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} {input[2]} 2> {log[0]} | samtools fixmate -@ {threads} -m - - 2> {log[1]} | samtools sort -@ {threads} -m {params.memory} -o {output} > {log[2]} 2>&1"
 
@@ -85,7 +85,7 @@ rule markdup:
         expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
     output:
         expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
-    log: "logs/{individual}/markdup.log"
+    log: expand("{logs}/{{individual}}/markdup.log", logs=config["log_dir"])
     threads: 4
     shell:
         "samtools markdup -@ {threads} -d {config[optical_dup_dist]} -S -r {input} {output} > {log} 2>&1"
@@ -95,7 +95,7 @@ rule index_bam:
         expand("{bam_dir}/{{individual}}.rmdup.bam", bam_dir = config['bam_dir'])
     output:
         expand("{bam_dir}/{{individual}}.rmdup.bam.bai", bam_dir = config['bam_dir'])
-    log: "logs/{individual}/index.log"
+    log: expand("{logs}/{{individual}}/index.log", logs=config["log_dir"])
     shell:
         "samtools index -@ {threads} {input} {output} > {log} 2>&1"
 
@@ -108,8 +108,8 @@ rule call:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
     log: 
-        "logs/{individual}/{chromosome}/mpielup.log",
-        "logs/{individual}/{chromosome}/call.log"
+        expand("{logs}/{{individual}}/{{chromosome}}/mpielup.log", logs=config["log_dir"]),
+        expand("{logs}/{{individual}}/{{chromosome}}/call.log", logs=config["log_dir"])
     shell:
         "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {wildcards.chromosome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" 2> {log[0]} | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output} > {log[1]} 2>&1"
 
@@ -119,7 +119,7 @@ rule index_raw_vcf:
     output:
         expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz.csi", vcf_dir = config['vcf_dir'])
     log:
-        "logs/{individual}/{chromosome}/index.log"
+        expand("{logs}/{{individual}}/{{chromosome}}/index.log", logs=config["log_dir"])
     shell:
         "bcftools index --threads {threads} {input} > {log} 2>&1"
 
@@ -142,7 +142,7 @@ rule merge_vcf:
     output:
         expand("{vcf_dir}/{{chromosome}}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"])
     threads: 2
-    log: "logs/{chromosome}/merge.log"
+    log: expand("{logs}/{{chromosome}}/merge.log", logs=config["log_dir"])
     shell:
         "bcftools merge --threads {threads} -Oz -o {output} {input.vcf} > {log} 2>&1"
 
