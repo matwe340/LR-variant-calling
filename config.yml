@@ -9,3 +9,4 @@ individual_file: "data/individuals.txt"
 adapters: "$HOME/mamba/envs/variant-calling/opt/bbmap-39.01-1/resources/adapters.fa"
 optical_dup_dist: 2500
 min_depth: 4
+log_dir: "logs"
