@@ -6,12 +6,6 @@ def chromosome_vcfs(wildcards):
         chromosomes = [line.strip() for line in f]
     return expand("{vcf_dir}/{chromosome}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
 
-def chromosome_filtered_vcfs(wildcards):
-    with open(config["chromosome_file"], 'r') as f:
-        chromosomes = [line.strip() for line in f]
-    return expand("{vcf_dir}/{chromosome}.merged.IF-GF-MM2.vcf.gz", vcf_dir = config["vcf_dir"], chromosome = chromosomes)
-
-
 def get_individuals():  
     individuals = dict()
     with open(config["individual_file"], 'r') as f:
@@ -22,10 +16,6 @@ def get_individuals():
             individuals[line[0]].append(line[1])
 
     return individuals
-
-rule filtered:
-    input:
-        chromosome_filtered_vcfs
 
 rule unfiltered:
     input:
@@ -123,13 +113,13 @@ rule call:
     shell:
         "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -r {wildcards.chromosome} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" 2> {log[0]} | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output} > {log[1]} 2>&1"
 
-rule index_vcf:
+rule index_raw_vcf:
     input:
-        "{vcf}.vcf.gz"
+        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz", vcf_dir = config['vcf_dir'])
     output:
-        "{vcf}.vcf.gz.csi"
+        expand("{vcf_dir}/{{individual}}/{{chromosome}}.raw.vcf.gz.csi", vcf_dir = config['vcf_dir'])
     log:
-        expand("{logs}/{{vcf}}.index.log", logs=config["log_dir"])
+        expand("{logs}/{{individual}}/{{chromosome}}/index.log", logs=config["log_dir"])
     shell:
         "bcftools index --threads {threads} {input} > {log} 2>&1"
 
@@ -155,49 +145,4 @@ rule merge_vcf:
     log: expand("{logs}/{{chromosome}}/merge.log", logs=config["log_dir"])
     shell:
         "bcftools merge --threads {threads} -Oz -o {output} {input.vcf} > {log} 2>&1"
-
-rule filter_qual_depth_missing_rpbz:
-    input:
-        expand("{vcf_dir}/{{chromosome}}.merged.raw.vcf.gz", vcf_dir = config["vcf_dir"])
-    output:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF.vcf.gz", vcf_dir = config["vcf_dir"])
-    log: expand("{logs}/{{chromosome}}/filter_qual_depth_missing.log", logs=config["log_dir"])
-    run:
-        sampn = int(shell("bcftools query -l {input} | wc -l", read=True))
-        avgdp = int(shell("bcftools query -f '%DP\n' {input} | datamash median 1 | datamash round 1", read=True))
-        dphi = 2 * avgdp
-
-        shell(f"""bcftools view --types snps --threads {{threads}} -e "QUAL < 20 || INFO/DP > {dphi} || INFO/DP < {sampn} || MQ < 30 || RPBZ < -3 || RPBZ > 3" -Oz -o {output} {input} > {log} 2>&1""")
-
-rule filter_gf:
-    input:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF.vcf.gz", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/{{chromosome}}.merged.IF.vcf.gz.csi", vcf_dir = config["vcf_dir"])
-    output:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF.vcf.gz", vcf_dir = config["vcf_dir"])
-    log: expand("{logs}/{{chromosome}}/filter_lcs.log", logs=config["log_dir"])
-    shell:
-        """bcftools +setGT -Oz -o {output} {input[0]} -- -t q -i "FMT/DP < {config[min_depth]}" -n "./." > {log} 2>&1"""
-
-rule retain_list:
-    input:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF.vcf.gz", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF.vcf.gz.csi", vcf_dir = config["vcf_dir"])
-    output:
-        expand("{vcf_dir}/{{chromosome}}_sample.stats", vcf_dir = config["vcf_dir"])
-    shell:
-        """echo -e "CHROM\tID\tnREF\tnALT\tnHET\tnTs\tnTv\tavgDP\tSingletons\tMissing_Sites" > {output}
-        bcftools stats --threads {threads} -S- {input[0]} | grep 'PSC' | tr ' ' '_' | awk -v c={wildcards.chromosome} '{{OFS="\t"}}{{print c, $3,$4,$5,$6,$7,$8,$10,$11,$14}}' | sed '1,2d' >> {output}
-        """
-
-rule filter_genotype_missing_ind:
-    input:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF.vcf.gz", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF.vcf.gz.csi", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/{{chromosome}}_sample.stats", vcf_dir = config["vcf_dir"])
-    output:
-        expand("{vcf_dir}/{{chromosome}}.merged.IF-GF-MM2.vcf.gz", vcf_dir = config["vcf_dir"])
-    log: expand("{logs}/{{chromosome}}/filter_genotype_missing.log", logs=config["log_dir"])
-    shell:
-        """bcftools view --threads {threads} --samples-file {input[2]} --force-samples --Ou {input[0]} | bcftools view --min-ac 1 --threads {threads} -i 'F_MISSING<0.2' -Oz -o {output} > {log} 2>&1""" 
 
