@@ -77,10 +77,26 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
     
     I suggest to open a screen or tmux window, as snakemake needs to run throughout the whole calculation in the background, but doesn't use many resources. 
 
-    Run 
+    Activate the environment:
 
+    with mamba:
+    ```
+    mamba activate variant-calling
+    ```
+
+    with micromamba:
+    ```
+    micromamba activate variant-calling
+    ```
+
+    Run
     ```
     snakemake --profile profile/default/
     ```
 
     in the variant-calling folder to start this pipeline on the rosa hpc cluster at the UOL. The profile sets sensible default resources for most use cases and limits the number of currently running jobs to 100, as there is a limit on number of concurrent jobs for a single group.
+
+    If you want to only create bams and don't run variant calling, run
+    ```
+    snakemake --profile profile/default/ bams
+    ```

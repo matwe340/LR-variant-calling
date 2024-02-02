@@ -17,9 +17,19 @@ def get_individuals():
 
     return individuals
 
+def individual_bams():
+    individuals = get_individuals()
+    bam_list = expand("{bam_dir}/{individual}.rmdup.bam", bam_dir = config["bam_dir"], individual = individuals.keys())
+    bam_index_list = expand("{bam_dir}/{individual}.rmdup.bam.bai", bam_dir = config["bam_dir"], individual = individuals.keys())
+    return bam_list + bam_index_list
+
 rule unfiltered:
     input:
         chromosome_vcfs
+
+rule bams:
+    input:
+        individual_bams
 
 rule index_reference:
     input: 
