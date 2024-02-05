@@ -39,7 +39,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     And adjust the path in the `config.yml` (or place it in the data folder)
 
-3. Create a individuals.txt file from your list of fastq files/sample sheet and adjust the read_name_pattern in the `config.yml` to fit your file names. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one being the file name without the {id} part in the read_name_pattern of the `config.yml`. 
+3. Create a individuals.txt file from your list of fastq files/sample sheet and adjust the read_name_pattern in the `config.yml` to fit your file names. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one should be the {id} part in the `read_name_pattern` of the `config.yml`. 
 
     For example:
     
