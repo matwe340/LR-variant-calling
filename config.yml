@@ -6,6 +6,6 @@ vcf_dir: "data/vcf"
 chromosome_file: "data/chromosomes.txt"
 read_name_pattern: "{id}_R{read}_001.fastq.gz"
 individual_file: "data/individuals.txt"
-adapters: "$CONDA_PREFIX/envs/variant-calling/opt/bbmap-39.01-1/resources/adapters.fa"
+adapters: "$CONDA_PREFIX/opt/bbmap-39.01-1/resources/adapters.fa"
 optical_dup_dist: 2500
 log_dir: "logs"
