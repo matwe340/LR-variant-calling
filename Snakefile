@@ -17,7 +17,7 @@ def get_individuals():
 
     return individuals
 
-def individual_bams():
+def individual_bams(wildcards):
     individuals = get_individuals()
     bam_list = expand("{bam_dir}/{individual}.rmdup.bam", bam_dir = config["bam_dir"], individual = individuals.keys())
     bam_index_list = expand("{bam_dir}/{individual}.rmdup.bam.bai", bam_dir = config["bam_dir"], individual = individuals.keys())
