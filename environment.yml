@@ -12,3 +12,6 @@ dependencies:
   - bcftools
   - bbmap
   - snakemake-executor-plugin-slurm
+  - datamash
+  - bedtools
+  
