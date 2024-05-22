@@ -27,11 +27,13 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
 ## Usage
 
-1. Adjust the paths to the genome and the raw fastq directory in the `config.yml` file.
+1. Copy the `config.yml.template` file to `config.yml` 
+
+2. Adjust the paths to the genome and the raw fastq directory in the `config.yml` file.
 
     Depending on your setup and the sequencing technology used, change the path to the adapter sequences (the one provided uses illumina adapters provided by bbduk if you installed using conda, mamba or micromamba). Also adjust the optical duplicates distance depending on the sequencer used (e.g. 2500 for NovaSeq, 100 for MiSeq).
 
-2. Create a chromosomes file from your reference genome:
+3. Create a chromosomes file from your reference genome:
 
     ```
     samtools faidx <reference.fasta> | cut -f 1 > chromosomes.txt
@@ -39,7 +41,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     And adjust the path in the `config.yml` (or place it in the data folder)
 
-3. Create a individuals.txt file from your list of fastq files/sample sheet and adjust the read_name_pattern in the `config.yml` to fit your file names. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one should be the {id} part in the `read_name_pattern` of the `config.yml`. 
+4. Create a individuals.txt file from your list of fastq files/sample sheet and adjust the read_name_pattern in the `config.yml` to fit your file names. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one should be the {id} part in the `read_name_pattern` of the `config.yml`. 
 
     For example:
     
@@ -73,7 +75,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     This will likely be adjusted in the future though to allow for different read pair patterns for different files.
 
-4. Run the pipeline.
+5. Run the pipeline.
     
     I suggest to open a screen or tmux window, as snakemake needs to run throughout the whole calculation in the background, but doesn't use many resources. 
 
