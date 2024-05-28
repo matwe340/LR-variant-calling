@@ -9,7 +9,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 2. Clone this repository and cd into it:
 
     ```
-    git clone git@gitlab.gwdg.de:georg.manthey/variant-calling.git
+    git clone https://github.com/gmanthey/variant-calling.git
     cd variant-calling
     ```
 
