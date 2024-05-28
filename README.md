@@ -41,7 +41,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     And adjust the path in the `config.yml` (or place it in the data folder)
 
-4. Create a individuals.txt file from your list of fastq files/sample sheet and adjust the read_name_pattern in the `config.yml` to fit your file names. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one should be the {id} part in the `read_name_pattern` of the `config.yml`. 
+4. Create a individuals.txt file from your list of fastq files/sample sheet. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one the path to the raw fastq file. Each line should only contain a single fastq file, but an individual can appear in multiple lines. The program automatically figures out R1 and R2 reads, as long as the string R1 or R2 appears in the file names.
 
     For example:
     
@@ -56,24 +56,21 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     Then the read_name_pattern should be:
 
-    ```
-    read_name_pattern: "{id}_R{read}_001.fastq.gz"
-    ```
-
     And the individuals.txt file needs to look like:
 
     ```
-    I1	I1_L1
-    I1	I1_L2
-    I2	I2_L1
+    I1  I1_L1_R1_001.fastq.gz
+    I1  I1_L1_R2_001.fastq.gz
+    I1  I1_L2_R1_001.fastq.gz
+    I1  I1_L2_R2_001.fastq.gz
+    I2  I2_L1_R1_001.fastq.gz
+    I2  I2_L1_R2_001.fastq.gz
     ```
 
     Then adjust the path in the `config.yml` file for the individuals file (or place it in the data folder).
 
 
     This allows for (almost) arbitrary files to be associated with any individual and a mapping to the actual individual ids early in the process. The trimmed fastq files will already contain combined sequences for an individual and are already named after the individual instead of after the files.
-
-    This will likely be adjusted in the future though to allow for different read pair patterns for different files.
 
 5. Run the pipeline.
     
