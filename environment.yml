@@ -1,14 +1,13 @@
 name: variant-calling
 channels:
-  - bioconda
-  - conda-forge
   - defaults
+  - conda-forge
+  - bioconda
 dependencies:
   - python
   - snakemake
   - samtools
   - bwa-mem2
-  - conda-forge::gsl==2.7
   - bcftools
   - bbmap
   - snakemake-executor-plugin-slurm
