@@ -54,7 +54,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
      - I2_L1_R1_001.fastq.gz
      - I2_L1_R2_001.fastq.gz
 
-    And the individuals.txt file needs to look like:
+    Then the individuals.txt file needs to look like:
 
     ```
     I1  I1_L1_R1_001.fastq.gz
