@@ -4,7 +4,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
 ## Installation
 
-1. If you haven't yet, install [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html) or [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html). ((conda)[https://www.anaconda.com/] works as well, but I would recommend mamba/micromamba as they are a lot faster when installing)
+1. If you haven't yet, install [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html) or [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html). ([conda](https://www.anaconda.com/) works as well, but I would recommend mamba/micromamba as they are a lot faster when installing)
 
 2. Clone this repository and cd into it:
 
