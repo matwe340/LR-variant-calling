@@ -1,16 +1,15 @@
 name: variant-calling
 channels:
-  - defaults
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
   - python
-  - snakemake
-  - samtools
-  - bwa-mem2
-  - bcftools
-  - bbmap
-  - snakemake-executor-plugin-slurm
+  - bioconda::snakemake
+  - bioconda::samtools
+  - bioconda::bwa-mem2
+  - bioconda::bcftools
+  - bioconda::bbmap
+  - bioconda::snakemake-executor-plugin-slurm
   - datamash
-  - bedtools
-  
+  - bioconda::bedtools
