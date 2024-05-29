@@ -4,11 +4,11 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
 ## Installation
 
-1. If you haven't yet, install [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html) or [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
+1. If you haven't yet, install [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html) or [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html). ((conda)[https://www.anaconda.com/] works as well, but I would recommend mamba/micromamba as they are a lot faster when installing)
 
 2. Clone this repository and cd into it:
 
-    ```
+    ```bash
     git clone https://github.com/gmanthey/variant-calling.git
     cd variant-calling
     ```
@@ -16,12 +16,12 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 3. Create a new environment from the environment specs file:
 
     Using mamba:
-    ```
+    ```bash
     mamba env create -f environment.yml
     ```
 
     Using micromamba:
-    ```
+    ```bash
     micromamba env create -f environment.yml
     ```
 
@@ -35,7 +35,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
 3. Create a chromosomes file from your reference genome:
 
-    ```
+    ```bash
     samtools faidx <reference.fasta> | cut -f 1 > chromosomes.txt
     ```
 
@@ -77,23 +77,23 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
     Activate the environment:
 
     with mamba:
-    ```
+    ```bash
     mamba activate variant-calling
     ```
 
     with micromamba:
-    ```
+    ```bash
     micromamba activate variant-calling
     ```
 
     Run
-    ```
+    ```bash
     snakemake --profile profile/default/
     ```
 
     in the variant-calling folder to start this pipeline on the rosa hpc cluster at the UOL. The profile sets sensible default resources for most use cases and limits the number of currently running jobs to 100, as there is a limit on number of concurrent jobs for a single group.
 
     If you want to only create bams and don't run variant calling, run
-    ```
+    ```bash
     snakemake --profile profile/default/ bams
     ```
