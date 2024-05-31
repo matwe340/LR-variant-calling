@@ -158,7 +158,7 @@ rule call:
         expand("{logs}/{{individual}}/mpielup.log", logs=config["log_dir"]),
         expand("{logs}/{{individual}}/call.log", logs=config["log_dir"])
     shell:
-        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -s {wildcards.individual} -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" 2> {log[0]} | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output} > {log[1]} 2>&1"
+        "bcftools mpileup --threads {threads} -q 20 -Q 20 -C 50 -Ou -s {wildcards.individual} --ignore-RG -f {input[1]} {input[0]} -a \"AD,ADF,ADR,DP,SP\" 2> {log[0]} | bcftools call --threads {threads} --ploidy 2 -m -Oz -o {output} > {log[1]} 2>&1"
 
 rule index_vcf:
     input:
