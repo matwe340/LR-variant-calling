@@ -271,5 +271,5 @@ rule filter_repeats:
         expand("{vcf_dir}/genome.IF-GF-MM2-RM.vcf.gz", vcf_dir = config["vcf_dir"])
     log: expand("{logs}/filter_repeats.log", logs=config["log_dir"])
     shell:
-        """bcftools view --threads {threads} -T <(bedtools complement -i {config['repeat_bed']} -g {config['genome']}) -Oz -o {output} {input[0]} > {log} 2>&1"""
+        """bcftools view --threads {threads} -T <(bedtools complement -i {config[repeat_bed]} -g {config[genome]}) -Oz -o {output} {input[0]} > {log} 2>&1"""
 
