@@ -59,6 +59,15 @@ rule index_reference:
     shell:
         "bwa-mem2 index -p {params[0]} {input[0]} > {log} 2>&1"
 
+rule sam_index_reference:
+    input:
+        config["genome"]
+    output:
+        "output/genome.fai"
+    log: expand("{logs}/sam_index_reference.log", logs=config["log_dir"])
+    shell:
+        "samtools faidx {input} --fai-idx {output} > {log} 2>&1"
+
 def get_reads(wildcards):
     individual_reads = get_individuals()
     all_reads = sum(individual_reads.values(), start=[])
@@ -266,10 +275,11 @@ rule filter_genotype_missing_ind:
 rule filter_repeats:
     input:
         expand("{vcf_dir}/genome.IF-GF-MM2.vcf.gz", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/genome.IF-GF-MM2.vcf.gz.csi", vcf_dir = config["vcf_dir"])
+        expand("{vcf_dir}/genome.IF-GF-MM2.vcf.gz.csi", vcf_dir = config["vcf_dir"]),
+        "output/genome.fai"
     output:
         expand("{vcf_dir}/genome.IF-GF-MM2-RM.vcf.gz", vcf_dir = config["vcf_dir"])
     log: expand("{logs}/filter_repeats.log", logs=config["log_dir"])
     shell:
-        """bcftools view --threads {threads} -T <(bedtools complement -i {config[repeat_bed]} -g {config[genome]}) -Oz -o {output} {input[0]} > {log} 2>&1"""
+        """bcftools view --threads {threads} -T <(bedtools complement -i {config[repeat_bed]} -g {input[2]}) -Oz -o {output} {input[0]} > {log} 2>&1"""
 
