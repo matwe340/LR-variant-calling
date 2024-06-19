@@ -36,7 +36,15 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 3. Create a chromosomes file from your reference genome:
 
     ```bash
-    samtools faidx <reference.fasta> | cut -f 1 > chromosomes.txt
+    samtools faidx <reference.fasta> 
+    cut -f 1 <reference.fasta.fai> > chromosomes.txt
+    ```
+    If the reference contains many scaffolds, it may be more efficient to group scaffolds together (as this pipeline parallelizes by chromosomes). For this, change the chromosome file to contain a group name in the first column, followed by whitespace seperated sequence names. This format may also be combined with single sequence names for large sequences, i.e.:
+    ```
+    group1 seq1 seq2 seq3
+    group2 seq4 seq5
+    seq6
+    seq7
     ```
 
     And adjust the path in the `config.yml` (or place it in the data folder)
