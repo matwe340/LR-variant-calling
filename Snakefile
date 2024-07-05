@@ -40,8 +40,8 @@ rule filtered:
 
 def individual_bams(wildcards):
     individuals = get_individuals()
-    bam_list = expand("{bam_dir}/{individual}{extension}.bam", bam_dir = config["bam_dir"], individual = individuals.keys())
-    bam_index_list = expand("{bam_dir}/{individual}{extension}.bai", bam_dir = config["bam_dir"], individual = individuals.keys())
+    bam_list = expand("{bam_dir}/{individual}{extension}.bam", bam_dir = config["bam_dir"], individual = individuals.keys(), extension=config["final_bam_extension"])
+    bam_index_list = expand("{bam_dir}/{individual}{extension}.bai", bam_dir = config["bam_dir"], individual = individuals.keys(), extension=config["final_bam_extension"])
     return bam_list + bam_index_list
 
 rule bams:
