@@ -1,0 +1,61 @@
+#!/bin/env python3
+
+from argparse import ArgumentParser
+import sys
+
+if __name__ == '__main__':
+    parser = ArgumentParser(description='Group scaffolds in a reference genome into n groups and print them out in a format usable as an individuals file for the pipeline.')
+    
+    parser.add_argument('-f', '--fasta', help='Fasta reference file (not needed if -fi is used)', default=None)
+    parser.add_argument('-fi', '--fasta-index', help='Fasta reference index file generated with samtools faidx', default=None)
+    parser.add_argument('-n', '--num-groups', help='Number of groups to split the reference genome into', type=int, default=10)
+    parser.add_argument('-o', '--output', help='Output file to write the groups to (default: stdout)', default=None)
+    parser.add_argument('-v', '--verbose', help='Print verbose output', action='count')
+    
+    args = parser.parse_args()
+    
+    n = args.num_groups
+    fasta = args.fasta
+    fasta_index = args.fasta_index
+    if args.output is not None:
+        output = open(args.output, 'w')
+    else:
+        output = sys.stdout
+    
+    if fasta is None and fasta_index is None:
+        parser.error('Either a fasta file or a fasta index file must be provided')
+    
+    scaffold_lengths: dict[str, int] = {}
+    
+    if fasta is not None:
+        with open(fasta, 'r') as f:
+            for line in f:
+                if line.startswith('>'):
+                    scaffold = line[1:].strip()
+                    scaffold_lengths[scaffold] = 0
+                else:
+                    scaffold_lengths[scaffold] += len(line.strip())
+    else:
+        with open(fasta_index, 'r') as f:
+            for line in f:
+                line_list = line.strip().split('\t')
+                scaffold = line_list[0]
+                length = line_list[1]
+                scaffold_lengths[scaffold] = int(length)
+                
+    lengths_sorted = sorted(scaffold_lengths.items(), key=lambda x: x[1], reverse=True)
+    
+    partitions = [[] for _ in range(n)]
+    partition_lengths = [0 for _ in range(n)]
+    
+    for scaffold, length in lengths_sorted:
+        min_length = min(partition_lengths)
+        min_index = partition_lengths.index(min_length)
+        
+        partitions[min_index].append(scaffold)
+        partition_lengths[min_index] += length
+
+    for i, partition in enumerate(partitions):
+        if args.verbose:
+            print(f'Partition {i} has size {partition_lengths[i]}', file=sys.stderr)
+        output.write('\t'.join([f'group{i}'] + partition) + '\n')
