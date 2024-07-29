@@ -165,10 +165,13 @@ rule individual_file:
             f.write(wildcards.individual)
 
 def bam_index_file(wildcards):
-    if os.path.exists(f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"):
-        return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"
+    if os.path.exists(f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bam"):
+        if os.path.exists(f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"):
+            return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"
+        else:
+            return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bam.bai"
     else:
-        return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bam.bai"
+        return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"
 
 rule call:
     input:
