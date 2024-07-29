@@ -122,7 +122,7 @@ def individual_trimmed(wildcards):
     
     file_ids = ['_'.join(sorted(read_files)) for read_files in individual_ids.values()]
 
-    return sorted(expand("{fastq_trimmed_dir}/{id}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], id = file_ids, read = [1, 2]))
+    return sorted(expand("{fastq_trimmed_dir}/{id}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], id = file_ids, read = wildcards.read))
 
 rule merge_trimmed:
     input:
