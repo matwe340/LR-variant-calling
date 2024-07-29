@@ -164,6 +164,12 @@ rule individual_file:
         with open(output[0], "w") as f:
             f.write(wildcards.individual)
 
+def bam_index_file(wildcards):
+    if os.path.exists(f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"):
+        return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bai"
+    else:
+        return f"{config['bam_dir']}/{wildcards.individual}{config['final_bam_extension']}.bam.bai"
+
 rule call:
     input:
         expand("{bam_dir}/{{individual}}{extension}.bam", bam_dir = config['bam_dir'], extension = config['final_bam_extension']),
