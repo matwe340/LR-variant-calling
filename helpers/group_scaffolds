@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import sys
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Group scaffolds in a reference genome into n groups and print them out in a format usable as an individuals file for the pipeline.')
+    parser = ArgumentParser(description='Group scaffolds in a reference genome into n groups and print them out in a format usable as an chromosomes file for the pipeline.')
     
     parser.add_argument('-f', '--fasta', help='Fasta reference file (not needed if -fi is used)', default=None)
     parser.add_argument('-fi', '--fasta-index', help='Fasta reference index file generated with samtools faidx', default=None)
