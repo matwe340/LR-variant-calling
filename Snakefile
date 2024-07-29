@@ -106,9 +106,9 @@ def individual_trimmed(wildcards):
 
     for read in individual_reads:
         if read.endswith('gz'):
-            file = gzip.open(read, 'rt')
+            file = gzip.open(os.path.join(config['raw_fastq_dir'], read), 'rt')
         else:
-            file = open(read, 'r')
+            file = open(os.path.join(config['raw_fastq_dir'], read), 'r')
         read1 = file.readline().strip().split()[0]
         file.close()
         read1 = read1[1:].split('/')[0] # BGI names (and possibly others) have a /1 or /2 at the end
