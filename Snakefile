@@ -213,7 +213,7 @@ rule rename_individual:
         expand("{logs}/{{individual}}/rename.log", logs=config["log_dir"])
     threads: 2
     shell:
-        "bcftools reheader --threads {threads} -s {input[1]} {input[0]} -Oz -o {output} > {log} 2>&1"
+        "bcftools reheader --threads {threads} -s {input[1]} {input[0]} -o {output} > {log} 2>&1"
 
 rule index_vcf:
     input:
