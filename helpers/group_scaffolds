@@ -31,7 +31,7 @@ if __name__ == '__main__':
         with open(fasta, 'r') as f:
             for line in f:
                 if line.startswith('>'):
-                    scaffold = line[1:].strip()
+                    scaffold = line[1:].strip().split()[0]
                     scaffold_lengths[scaffold] = 0
                 else:
                     scaffold_lengths[scaffold] += len(line.strip())
