@@ -13,3 +13,4 @@ dependencies:
   - bioconda::snakemake-executor-plugin-slurm
   - datamash
   - bioconda::bedtools
+  - matplotlib
