@@ -46,13 +46,13 @@ rule trim_paired_reads:
     params:
         memory = "40G"
     shell:
-        """bbduk.sh 
-        t={threads} 
-        -Xmx{params.memory} 
-        overwrite=true 
-        in={input[0]} in2={input[1]} 
-        out={output[0]} out2={output[1]} 
-        ref={config[adapters]} 
+        """bbduk.sh \
+        t={threads} \
+        -Xmx{params.memory} \
+        overwrite=true \
+        in={input[0]} in2={input[1]} \
+        out={output[0]} out2={output[1]} \
+        ref={config[adapters]} \
         ktrim=r k=23 mink=25 hdist=1 tpe tbo > {log[0]} 2>&1
         """
 
