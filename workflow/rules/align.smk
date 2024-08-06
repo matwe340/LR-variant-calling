@@ -7,17 +7,17 @@ def individual_bams(wildcards):
     bam_index_list = expand("{bam_dir}/{individual}{extension}.bai", bam_dir = config["bam_dir"], individual = individuals.keys(), extension=config["final_bam_extension"])
     return bam_list + bam_index_list
 
-def get_reads(wildcards):
+def get_raw_fastq_files(wildcards):
     individuals = get_individuals()
-    all_reads = sum(individuals.values(), [])
+    all_fastq_files = sum(individuals.values(), [])
 
-    reads = []
-    for read in all_reads:
-        basename = os.path.basename(read)
-        if basename in wildcards.id:
-            reads.append(read)
+    fastq_files = []
+    for fastq_file in all_fastq_files:
+        basename = os.path.basename(fastq_file)
+        if basename in wildcards.run_id:
+            fastq_files.append(fastq_file)
 
-    return sorted(expand("{fastq_dir}/{read}", fastq_dir = config["raw_fastq_dir"], read = reads), key=lambda x: x[::-1])
+    return sorted(expand("{fastq_dir}/{fastq_file}", fastq_dir = config["raw_fastq_dir"], fastq_file = fastq_files), key=lambda x: x[::-1])
 
 rule bams:
     input:
@@ -36,10 +36,10 @@ rule index_reference:
 
 rule trim_paired_reads:
     input:
-        get_reads
+        get_raw_fastq_files
     output:
-        temp(expand("{fastq_trimmed_dir}/{{id}}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], read=[1, 2]))
-    log: expand("{logs}/{{id}}/trim.log", logs=config["log_dir"])
+        temp(expand("{fastq_trimmed_dir}/{{run_id}}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], read=[1, 2]))
+    log: expand("{logs}/{{run_id}}/trim.log", logs=config["log_dir"])
     threads: 4
     resources:
         mem_mb = 40000
@@ -56,36 +56,36 @@ rule trim_paired_reads:
         ktrim=r k=23 mink=25 hdist=1 tpe tbo > {log[0]} 2>&1
         """
 
-def individual_trimmed(wildcards):
+def fastq_files_trimmed(wildcards):
     individuals = get_individuals()
 
-    individual_reads = individuals[wildcards.individual]
+    fastq_files_per_individual = individuals[wildcards.individual]
 
-    individual_ids = {}
+    run_ids = {}
 
-    for read in individual_reads:
-        if read.endswith('gz'):
-            file = gzip.open(os.path.join(config['raw_fastq_dir'], read), 'rt')
+    for fastq_file in fastq_files_per_individual:
+        if fastq_file.endswith('gz'):
+            file = gzip.open(os.path.join(config['raw_fastq_dir'], fastq_file), 'rt')
         else:
-            file = open(os.path.join(config['raw_fastq_dir'], read), 'r')
-        read1 = file.readline().strip().split()[0]
+            file = open(os.path.join(config['raw_fastq_dir'], fastq_file), 'r')
+        first_read = file.readline().strip().split()[0]
         file.close()
-        read1 = read1[1:].split('/')[0] # BGI names (and possibly others) have a /1 or /2 at the end
-        if read1 not in individual_ids:
-            individual_ids[read1] = []
-        individual_ids[read1].append(os.path.basename(read))
+        first_read = first_read[1:].split('/')[0] # BGI names (and possibly others) have a /1 or /2 at the end
+        if first_read not in run_ids:
+            run_ids[first_read] = []
+        run_ids[first_read].append(os.path.basename(fastq_file))
 
-    for read_id, read_files in individual_ids.items():
-        if len(read_files) != 2:
-            raise ValueError(f"Read id {read_id} does not have 2 files associate with it. (Found {', '.join(read_files)})")
+    for read_id, run_fastq_files in run_ids.items():
+        if len(run_fastq_files) != 2:
+            raise ValueError(f"Read id {read_id} does not have 2 files associate with it. (Found {', '.join(run_fastq_files)})")
     
-    file_ids = ['_'.join(sorted(read_files)) for read_files in individual_ids.values()]
+    temp_file_ids = ['_'.join(sorted(run_fastq_files)) for run_fastq_files in run_ids.values()]
 
-    return sorted(expand("{fastq_trimmed_dir}/{id}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], id = file_ids, read = wildcards.read))
+    return sorted(expand("{fastq_trimmed_dir}/{run_id}_R{read}.trimmed.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], run_id = temp_file_ids, read = wildcards.read))
 
 rule merge_trimmed:
     input:
-        individual_trimmed
+        fastq_files_trimmed
     output:
         expand("{fastq_trimmed_dir}/{{individual}}_R{{read}}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"])
     shell:
