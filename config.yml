@@ -1,0 +1,12 @@
+genome: "/fs/dss/work/axbo4983/genomes/bEriRub/bEriRub.fasta"
+bam_dir: "data/bam"
+fastq_trimmed_dir: "data/fastq_trimmed"
+raw_fastq_dir: "/nfs/group/aggenmig/archive/species/robin/experiments/RESEQ/illumina/NOVASEQ"
+vcf_dir: "data/vcf"
+chromosome_file: "data/chromosomes.txt"
+individual_file: "data/individuals.txt"
+adapters: "$HOME/mamba/envs/variant-calling/opt/bbmap-39.06-1/resources/adapters.fa"
+optical_dup_dist: 2500
+min_depth: 4
+log_dir: "logs"
+final_bam_extension: ".rmdup"
