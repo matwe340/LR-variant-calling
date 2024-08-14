@@ -8,5 +8,5 @@ individual_file: "resources/individuals.txt"
 adapters: "$CONDA_PREFIX/opt/bbmap-39.06-1/resources/adapters.fa"
 min_depth: 4
 log_dir: "logs"
-repeat_bed: "results/repeat.bed"
+repeat_bed: "resources/repeat.bed"
 final_bam_extension: ".rmdup"
