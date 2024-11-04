@@ -49,7 +49,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     And adjust the path in the `config.yml` (or place it in the resources folder)
 
-4. Create a individuals.txt file from your list of fastq files/sample sheet. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one the path to the raw fastq file. Each line should only contain a single fastq file, but an individual can appear in multiple lines. The program automatically figures out R1 and R2 reads, as long as the string R1 or R2 appears in the file names.
+4. Create a individuals.txt file from your list of fastq files/sample sheet. The individuals.txt file needs to be a tab seperated file with 2 columns, the first one being the individual ids that should be in the final vcf and the second one the path to the raw fastq file. Each line should only contain a single fastq file, but an individual can appear in multiple lines. The program automatically figures out R1 and R2 reads, as long as the first read in both files has the same fastq id.
 
     For example:
     
