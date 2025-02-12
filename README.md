@@ -78,7 +78,12 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     This allows for (almost) arbitrary files to be associated with any individual and a mapping to the actual individual ids early in the process. The trimmed fastq files will already contain combined sequences for an individual and are already named after the individual instead of after the files.
 
-5. Run the pipeline.
+    If the files already contain the sample names, as for example in the above case, you can create such a file with the following handy one-liner:
+    ```bash
+    ls *.fastq.gz | cut -d "_" -f 1 | paste - <(ls *.fastq.gz)
+    ```
+
+6. Run the pipeline.
     
     I suggest to open a screen or tmux window, as snakemake needs to run throughout the whole calculation in the background, but doesn't use many resources. 
 
