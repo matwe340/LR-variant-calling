@@ -10,3 +10,4 @@ min_depth: 4
 log_dir: "logs"
 repeat_bed: "resources/repeat.bed"
 final_bam_extension: ".rmdup"
+ploidy: 2
