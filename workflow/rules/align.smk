@@ -3,9 +3,7 @@ import os
 
 def individual_bams(wildcards):
     individuals = get_individuals()
-    bam_list = expand("{bam_dir}/{individual}{extension}.bam", bam_dir = config["bam_dir"], individual = individuals.keys(), extension=config["final_bam_extension"])
-    bam_index_list = expand("{bam_dir}/{individual}{extension}.bam.bai", bam_dir = config["bam_dir"], individual = individuals.keys(), extension=config["final_bam_extension"])
-    return bam_list + bam_index_list
+    return flatten([get_bam_file(individual) for individual in individuals.keys()])
 
 def get_raw_fastq_files(wildcards):
     individuals = get_individuals()
@@ -91,10 +89,17 @@ rule merge_trimmed:
     shell:
         "cat {input} > {output}"
 
+def trimmed_fastq_individual(wildcards):
+    fastq_ro = expand("{ro_fastq_trimmed_dir}/{individual}_R{read}.trimmed.all.fastq.gz", ro_fastq_trimmed_dir = config["ro_fastq_trimmed_dir"], individual = wildcards.individual, read = [1, 2])
+    if all([os.path.exists(fastq_file) for fastq_file in fastq_ro]):
+        return fastq_ro
+    else:
+        return expand("{fastq_trimmed_dir}/{individual}_R{read}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], individual = wildcards.individual, read = [1, 2])
+
 rule align:
     input:
         "results/genome/genome.pac",
-        expand("{fastq_trimmed_dir}/{{individual}}_R{read}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], read=[1, 2])
+        trimmed_fastq_individual
     params:
         genome_idx = "results/genome/genome",
         memory = "8G"

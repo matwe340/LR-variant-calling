@@ -1,12 +1,19 @@
 
 include: "index.smk"
 
+def raw_vcf_individual(wildcards):
+    vcf_ro = expand(f"{config['ro_ind_vcf_dir']}/individuals/{wildcards.individual}.raw.vcf.gz")
+    if os.path.exists(vcf_ro):
+        vcf_base = vcf_ro
+    else:
+        vcf_base = expand(f"{config['vcf_dir']}/individuals/{wildcards.individual}.raw.vcf.gz")
+    return [vcf_base, vcf_base + ".csi"]
+
 rule filter_ind_quality:
     input:
-        expand("{vcf_dir}/{{individual}}.raw.vcf.gz", vcf_dir = config["vcf_dir"]),
-        expand("{vcf_dir}/{{individual}}.raw.vcf.gz.csi", vcf_dir = config["vcf_dir"])
+        raw_vcf_individual
     output:
-        temp(expand("{vcf_dir}/{{individual}}.QUAL.vcf.gz", vcf_dir = config["vcf_dir"]))
+        temp(expand("{vcf_dir}/individuals/{{individual}}.QUAL.vcf.gz", vcf_dir = config["vcf_dir"]))
     log: expand("{logs}/{{individual}}/filter_qual.log", logs=config["log_dir"])
     run:
         shell(f"bcftools view --threads {{threads}} -e 'QUAL < 20' -Oz -o {{output}} {input[0]} > {{log}} 2>&1")
@@ -14,13 +21,13 @@ rule filter_ind_quality:
 def individual_vcfs(wildcards):
     individuals = get_individuals()
 
-    vcf_list = expand("{vcf_dir}/{individual}.QUAL.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys())
+    vcf_list = expand("{vcf_dir}/individuals/{individual}.QUAL.vcf.gz", vcf_dir = config["vcf_dir"], individual = individuals.keys())
     return vcf_list
 
 def individual_vcf_indices(wildcards):
     individuals = get_individuals()
 
-    vcf_list = expand("{vcf_dir}/{individual}.QUAL.vcf.gz.csi", vcf_dir = config["vcf_dir"], individual = individuals.keys())
+    vcf_list = expand("{vcf_dir}/individuals/{individual}.QUAL.vcf.gz.csi", vcf_dir = config["vcf_dir"], individual = individuals.keys())
     return vcf_list
 
 def chromosome_filtered_vcfs(wildcards):

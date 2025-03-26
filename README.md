@@ -110,3 +110,12 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
     ```bash
     snakemake --profile profile/default/ bams
     ```
+
+## Specialized use cases
+
+### Add samples to an already finished run
+
+If you have intermediate files from an old run archived in some location, you may add these as intermediate starting points for the respective samples, while samples that do not exist at these locations will be generated from scratch. For this, fill in any of the following fields in the `config.yml` file:
+ - `ro_fastq_trimmed_dir`
+ - `ro_bam_dir`
+ - `ro_ind_vcf_dir`
