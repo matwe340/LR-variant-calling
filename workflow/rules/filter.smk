@@ -1,12 +1,13 @@
+import os
 
 include: "index.smk"
 
 def raw_vcf_individual(wildcards):
-    vcf_ro = expand(f"{config['ro_ind_vcf_dir']}/individuals/{wildcards.individual}.raw.vcf.gz")
+    vcf_ro = f"{config['ro_ind_vcf_dir']}/{wildcards.individual}.raw.vcf.gz"
     if os.path.exists(vcf_ro):
         vcf_base = vcf_ro
     else:
-        vcf_base = expand(f"{config['vcf_dir']}/individuals/{wildcards.individual}.raw.vcf.gz")
+        vcf_base = f"{config['vcf_dir']}/individuals/{wildcards.individual}.raw.vcf.gz"
     return [vcf_base, vcf_base + ".csi"]
 
 rule filter_ind_quality:

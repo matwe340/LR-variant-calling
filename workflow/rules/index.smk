@@ -1,8 +1,8 @@
 rule index_vcf:
     input:
-        "{vcf}.vcf.gz"
+        expand("{vcf_dir}/{{vcf}}.vcf.gz", vcf_dir=config["vcf_dir"])
     output:
-        "{vcf}.vcf.gz.csi"
+        expand("{vcf_dir}/{{vcf}}.vcf.gz.csi", vcf_dir=config["vcf_dir"])
     log:
         expand("{logs}/{{vcf}}.index.log", logs=config["log_dir"])
     shell:
