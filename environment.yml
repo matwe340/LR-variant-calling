@@ -11,6 +11,7 @@ dependencies:
   - bioconda::bcftools
   - bioconda::bbmap==39.06
   - bioconda::snakemake-executor-plugin-slurm
+  - bioconda::fastp
   - datamash
   - bioconda::bedtools
   - matplotlib

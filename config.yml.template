@@ -1,5 +1,5 @@
-genome: "resources/genome.fasta"
-bam_dir: "results/bam"
+genome: "resources/genome.fasta" # the path and file to the reference assembly
+bam_dir: "results/bam" 
 ro_bam_dir: ""
 fastq_trimmed_dir: "results/fastq_trimmed"
 ro_fastq_trimmed_dir: ""

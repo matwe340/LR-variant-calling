@@ -28,8 +28,8 @@ def get_individuals():
     return individuals
 
 def get_bam_file(individual):
-    if os.path.exists(f"{config["ro_bam_dir"]}/{individual}{config['final_bam_extension']}.bam"):
-        bam_prefix = f"{config["ro_bam_dir"]}/{individual}{config['final_bam_extension']}"
+    if os.path.exists(f"{config['ro_bam_dir']}/{individual}{config['final_bam_extension']}.bam"):
+        bam_prefix = f"{config['ro_bam_dir']}/{individual}{config['final_bam_extension']}"
     else:
         bam_prefix = f"{config['bam_dir']}/{individual}{config['final_bam_extension']}"
 
