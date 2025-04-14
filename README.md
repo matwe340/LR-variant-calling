@@ -25,6 +25,9 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
     micromamba env create -f environment.yml
     ```
 
+    If the `variant-calling` environment had been created previousl, make sure 
+    you update to the newest version using `mamba env update --file environment.yml --prune`
+
 ## Usage
 
 1. Copy the `config.yml.template` file to `config.yml` 
