@@ -1,6 +1,7 @@
-# Variant-calling
+# LR-Variant-calling
 
-Snakemake pipeline to do variant calling, that is, get from fastq files from the sequencing company to a vcf file.
+This Snakemake pipeline is a modification of https://github.com/gmanthey/variant-calling to do variant calling using long read (PacBio, ONT) data.
+
 
 ## Installation
 
@@ -9,8 +10,8 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 2. Clone this repository and cd into it:
 
     ```bash
-    git clone https://github.com/gmanthey/variant-calling.git
-    cd variant-calling
+    git clone https://github.com/gmanthey/LR-variant-calling.git
+    cd LR-variant-calling
     ```
 
 3. Create a new environment from the environment specs file:
@@ -25,7 +26,7 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
     micromamba env create -f environment.yml
     ```
 
-    If the `variant-calling` environment had been created previousl, make sure 
+    If the `LR-variant-calling` environment had been created previously, make sure 
     you update to the newest version using `mamba env update --file environment.yml --prune`
 
 ## Usage
@@ -94,12 +95,12 @@ Snakemake pipeline to do variant calling, that is, get from fastq files from the
 
     with mamba:
     ```bash
-    mamba activate variant-calling
+    mamba activate LR-variant-calling
     ```
 
     with micromamba:
     ```bash
-    micromamba activate variant-calling
+    micromamba activate LR-variant-calling
     ```
 
     Run

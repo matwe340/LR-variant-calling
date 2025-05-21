@@ -7,21 +7,14 @@
 import re
 
 configfile: "config.yml"
-localrules: all, index_bam, index_reference, parse_json, summarize_fastq_stats, fastq_stats, merge_trimmed, retain_list
+localrules: all, index_bam, index_reference, retain_list
 
 rule all:
     input:
-        "results/fastq_stats/runs_fastq_summary",
         expand('{vcf_dir}/genome.IF-GF-MM2-RM.vcf.gz', vcf_dir = config["vcf_dir"]),
         expand('{vcf_dir}/genome.IF-GF-MM2-RM.vcf.gz.csi', vcf_dir = config["vcf_dir"])
 
-rule fastq_stats:
-    input:
-        "results/fastq_stats/runs_fastq_summary"
-
 include: "rules/scripts.smk"
-
-include: "rules/read_processing.smk"
 
 include: "rules/read_mapping.smk"
 

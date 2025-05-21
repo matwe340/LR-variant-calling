@@ -1,78 +1,55 @@
+##
 import gzip
 import os
 
-def individual_bams(wildcards):
+def sequencing_bam_file(wildcards):
     individuals = get_individuals()
-    return flatten([get_bam_file(individual) for individual in individuals.keys()])
+    sequencing_bam_file_per_individual = individuals[wildcards.individual] # This step here is crucial! It links the individual ID with the bam filename from the individuals.txt file. The latter doesn't even have the individual ID in its file name!
 
-def get_raw_fastq_files(wildcards):
-    individuals = get_individuals()
-    all_fastq_files = sum(individuals.values(), [])
+    return expand("{sequencing_bam_dir}/{sequencing_bam_file_per_individual}", sequencing_bam_dir = config["sequencing_bam_dir"], sequencing_bam_file_per_individual = sequencing_bam_file_per_individual )
 
-    fastq_files = []
-    for fastq_file in all_fastq_files:
-        basename = os.path.basename(fastq_file)
-        if basename in wildcards.run_id:
-            fastq_files.append(fastq_file)
-
-    return sorted(expand("{fastq_dir}/{fastq_file}", fastq_dir = config["raw_fastq_dir"], fastq_file = fastq_files), key=lambda x: x[::-1])
+def sorted_bam_files(wildcards):
+    return expand("{bam_dir}/{individual}.ML_included.sorted.bam", bam_dir = config["bam_dir"], individual = wildcards.individual)
 
 rule bams:
     input:
-        individual_bams
+        sorted_bam_files
 
 rule index_reference:
     input: 
         config["genome"]
     output:
-        "results/genome/genome.pac"
-    params:
-        "results/genome/genome"
+        "results/genome/genome.mmi"
     log: expand("{logs}/index_reference.log", logs=config["log_dir"])
     shell:
-        "bwa-mem2 index -p {params[0]} {input[0]} > {log} 2>&1"
-
-def trimmed_fastq_individual(wildcards):
-    fastq_ro = expand("{ro_fastq_trimmed_dir}/{individual}_R{read}.trimmed.all.fastq.gz", ro_fastq_trimmed_dir = config["ro_fastq_trimmed_dir"], individual = wildcards.individual, read = [1, 2])
-    if all([os.path.exists(fastq_file) for fastq_file in fastq_ro]):
-        return fastq_ro
-    else:
-        return expand("{fastq_trimmed_dir}/{individual}_R{read}.trimmed.all.fastq.gz", fastq_trimmed_dir = config["fastq_trimmed_dir"], individual = wildcards.individual, read = [1, 2])
+        "/user/hote1586/tools/minimap2/minimap2 -t 8 -k 17 -I 8G -d {output} {input[0]} > {log} 2>&1"
 
 rule align:
     input:
-        "results/genome/genome.pac",
-        trimmed_fastq_individual
-    params:
-        genome_idx = "results/genome/genome",
-        memory = "8G"
+        sequencing_bam_file,
+        "results/genome/genome.mmi"
     output:
-        temp(expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config["bam_dir"]))
+        expand("{bam_dir}/{{individual}}.ML_included.sorted.bam", bam_dir = config["bam_dir"])
     threads: 8
     resources:
         mem_mb = 100000
     log: 
-        expand("{logs}/{{individual}}/bwa.log", logs=config["log_dir"]),
-        expand("{logs}/{{individual}}/fixmate.log", logs=config["log_dir"]),
-        expand("{logs}/{{individual}}/sort.log", logs=config["log_dir"])
+        expand("{logs}/{{individual}}/read_mapping.log", logs=config["log_dir"]),
     shell:
-        "bwa-mem2 mem -t {threads} {params.genome_idx} {input[1]} {input[2]} 2> {log[0]} | samtools fixmate -@ {threads} -u -m - - 2> {log[1]} | samtools sort -@ {threads} -m {params.memory} -o {output} > {log[2]} 2>&1"
-
-rule markdup:
-    input:
-        expand("{bam_dir}/{{individual}}.sorted.bam", bam_dir = config['bam_dir'])
-    output:
-        expand("{bam_dir}/{{individual}}{extension}.bam", bam_dir = config['bam_dir'], extension = config['final_bam_extension'])
-    log: expand("{logs}/{{individual}}/markdup.log", logs=config["log_dir"])
-    threads: 4
-    shell:
-        "samtools markdup -@ {threads} -S -r {input} {output} > {log} 2>&1"
+        """
+        samtools fastq -@ {threads} -T MM,ML {input[0]} |\
+        minimap2 -t {threads} -y -x map-hifi --MD --eqx --cs -Y -L -a -k 17 -K 10g {input[1]} - |\
+        samtools view -@ {threads} -bh - |\
+        samtools sort -@ {threads} - > {output}
+        """
 
 rule index_bam:
     input:
         expand("{bam_dir}/{{individual}}{extension}.bam", bam_dir = config['bam_dir'], extension = config['final_bam_extension'])
     output:
         expand("{bam_dir}/{{individual}}{extension}.bam.bai", bam_dir = config['bam_dir'], extension = config['final_bam_extension'])
+    threads: 8
     log: expand("{logs}/{{individual}}/index.log", logs=config["log_dir"])
     shell:
         "samtools index -@ {threads} {input} {output} > {log} 2>&1"
+

@@ -18,12 +18,9 @@ def get_individuals():
             if line == '':
                 continue
             line = line.split()
-            if line[0] not in individuals:
-                individuals[line[0]] = []
-            if len(line) == 1:
-                individuals[line[0]].append(line[0])
-            else:
-                individuals[line[0]].append(line[1])
+            if line[0] in individuals:
+                raise ValueError(f"ID {line[0]} present more than once.")
+            individuals[line[0]] = line[1]
 
     return individuals
 
